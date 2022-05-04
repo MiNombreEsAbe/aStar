@@ -147,7 +147,7 @@ html, body, #root {
 
 @media screen and (max-width: 400px) {
   .map .mapHolder .row button {
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
 }
 
