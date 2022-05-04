@@ -1,6 +1,8 @@
 import './App.css';
 import aStar, { Node } from './aStar/helperFunctions';
 import Map from './aStar/classes';
+import AStarButtons from './components/aStar/AStarButtons';
+import AStarDisplay from './components/aStar/AStarDisplay';
 
 import { useState } from 'react';
 
@@ -21,9 +23,9 @@ function App() {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
-    results: []
+    results: [],
+    disableButtons: false
   }
-
   const [values, setValues] = useState(initialValues);
 
   const changeMode = mode => {
@@ -77,8 +79,6 @@ function App() {
     const results = aStar(astarmap);
     let mapCopy = [...values.map];
 
-    // console.log(astarmap.map, mapCopy, results)
-
     if (results === null) {
       for (let row = 0; row < mapCopy.length; row++) {
         for (let col = 0; col < mapCopy[row].length; col++) {
@@ -87,53 +87,26 @@ function App() {
       }
     } else {
       results.forEach(coord => {
-        // console.log(coord)
         mapCopy[coord[0]][coord[1]] = mapCopy[coord[0]][coord[1]] === 0 ? 5: mapCopy[coord[0]][coord[1]];
       })
     }
 
     setValues({
       ...values,
-      map: mapCopy
+      map: mapCopy,
+      mode: 5,
+      disableButtons: true
     })
   }
 
+  const reset = () => {
+    setValues(initialValues);
+  }
+
   return (
-    <div className='map'>
-      {values.map.map((row, rowIdx) => {
-        return (
-          <div key={`row${rowIdx}`} className='row'>
-            {values.map[rowIdx].map((col, colIdx) => {
-              const colorDict = {
-                0: 'white',
-                1: 'black',
-                2: 'green',
-                3: 'orange',
-                4: 'red',
-                5: 'blue'
-              }
-
-              return (
-                <button 
-                  key={`row${rowIdx}col${colIdx}`} 
-                  onClick={() => handleChange(rowIdx, colIdx)}
-                  className={colorDict[col]}
-                >{col}</button>
-              )
-            })}
-          </div>
-        );
-      })}
-
-      <div className='setMode'>
-        <p>Set Mode</p>
-        <div className='buttons'>
-          <button onClick={() => changeMode(1)}>Toggle Barriers</button>
-          <button onClick={() => changeMode(2)}>Set Start</button>
-          <button onClick={() => changeMode(3)}>Set End</button>
-          <button onClick={startAStar}>AStar</button>
-        </div>
-      </div>
+    <div className='page'>
+      <AStarButtons changeMode={changeMode} startAStar={startAStar} reset={reset} mode={values.mode} />
+      <AStarDisplay map={values.map} disableButtons={values.disableButtons} handleChange={handleChange} />
     </div>
   );
 }
